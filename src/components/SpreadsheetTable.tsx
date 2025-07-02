@@ -87,10 +87,8 @@ export default function SpreadsheetTable() {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (!focusedCell) return;
-
       const maxRow = data.length - 1;
       const maxCol = visibleCols.length - 1;
-
       let { rowIdx, colIdx } = focusedCell;
 
       switch (e.key) {
@@ -123,7 +121,6 @@ export default function SpreadsheetTable() {
         default:
           return;
       }
-
       setFocusedCell({ rowIdx, colIdx });
     },
     [focusedCell, data, visibleCols]
@@ -144,32 +141,39 @@ export default function SpreadsheetTable() {
   }, [focusedCell]);
 
   return (
-    <div className="p-4 space-y-4">
-      <h2 className="text-lg font-semibold">📊 Spreadsheet Table</h2>
+    <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
+      <h2 className="text-2xl font-semibold tracking-tight">
+        📊 Spreadsheet Table
+      </h2>
 
-      <div className="flex flex-wrap gap-4 text-sm">
+      <div className="flex flex-wrap gap-4 text-sm items-center">
+        <span className="font-medium">Toggle Columns:</span>
         {table.getAllLeafColumns().map((column) => (
-          <label key={column.id} className="flex items-center gap-1">
+          <label
+            key={column.id}
+            className="flex items-center gap-2 px-3 py-1 border rounded-full bg-gray-100 hover:bg-gray-200 cursor-pointer"
+          >
             <input
               type="checkbox"
               checked={column.getIsVisible()}
               onChange={() => column.toggleVisibility()}
+              className="accent-blue-600"
             />
             {column.id}
           </label>
         ))}
       </div>
 
-      <div className="overflow-auto border rounded-lg">
-        <table className="min-w-full border-separate border-spacing-0 text-sm text-left">
-          <thead className="bg-gray-100 text-gray-700 font-semibold">
+      <div className="overflow-auto border border-gray-300 rounded-lg shadow-sm">
+        <table className="min-w-full border-collapse text-sm text-left">
+          <thead className="bg-gray-100 text-gray-800">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
                     style={{ width: header.getSize() }}
-                    className="relative group px-4 py-2 border-b border-gray-300 bg-gray-100"
+                    className="relative group px-4 py-3 border-b border-gray-300 font-semibold text-sm"
                   >
                     <div className="flex items-center justify-between">
                       {flexRender(
@@ -180,7 +184,7 @@ export default function SpreadsheetTable() {
                         <div
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}
-                          className="absolute top-0 right-0 h-full w-1 cursor-col-resize bg-transparent group-hover:bg-blue-300 transition-all duration-150"
+                          className="absolute top-0 right-0 h-full w-1 cursor-col-resize bg-transparent group-hover:bg-blue-400 transition"
                         />
                       )}
                     </div>
@@ -189,17 +193,15 @@ export default function SpreadsheetTable() {
               </tr>
             ))}
           </thead>
-          <tbody className="text-gray-800">
+          <tbody className="text-gray-900 bg-white">
             {table.getRowModel().rows.map((row, rowIdx) => {
               tableRef.current[rowIdx] = [];
-
               return (
-                <tr key={row.id} className="hover:bg-gray-50">
+                <tr key={row.id} className="hover:bg-blue-50 transition">
                   {row.getVisibleCells().map((cell, colIdx) => {
                     const isFocused =
                       focusedCell?.rowIdx === rowIdx &&
                       focusedCell?.colIdx === colIdx;
-
                     return (
                       <td
                         key={cell.id}
@@ -207,8 +209,8 @@ export default function SpreadsheetTable() {
                           if (el) tableRef.current[rowIdx][colIdx] = el;
                         }}
                         style={{ width: cell.column.getSize() }}
-                        className={`px-4 py-2 border-b border-gray-200 outline-none ${
-                          isFocused ? "ring-2 ring-blue-500 bg-blue-50" : ""
+                        className={`px-4 py-2 border-b border-gray-200 outline-none whitespace-nowrap focus:outline-none ${
+                          isFocused ? "ring-2 ring-blue-500 bg-blue-100" : ""
                         }`}
                         tabIndex={0}
                         onClick={() => {
